@@ -23,7 +23,7 @@ def update_data():
             if datetime.date.today() != today:
                 break
             if ser.inWaiting():
-                data_type, data, timestamp = dht11_parser.read_data(ser)
+                data_type, data, timestamp = dht_parser.read_data(ser)
                 if data_type == "t/*C":
                     data_temperature.append((timestamp, data))
                 elif data_type == "RH/%":
