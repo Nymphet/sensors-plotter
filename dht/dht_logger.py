@@ -4,7 +4,7 @@ import serial
 import datetime
 import time
 
-import dht11_parser
+import dht_parser
 
 
 serial_port = "/dev/ttyUSB0"
