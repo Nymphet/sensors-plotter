@@ -108,3 +108,4 @@ venv.bak/
 
 # generated data
 dht/data/
+esp8266_probe_request/data/

@@ -1,0 +1,24 @@
+#/etc/smokeping/config.d/Targets
+*** Targets ***
+
+probe = FPing6
+
+menu = Top
+title = Network Latency Grapher
+remark = Welcome. Here we monitor the network \
+latency connecting to google.com.
+
+
++ google
+
+probe = FPing6
+menu = Google
+title = Hosts of Google
+host = google.com
+
++ baidu
+
+probe = Curl
+menu = Baidu
+title = Hosts of Baidu
+host = baidu.com
