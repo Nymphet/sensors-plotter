@@ -7,7 +7,7 @@ import time
 # RSSI: -78 Ch: 13 Peer MAC: da:a1:11:7f:49:11 SSID: AndroidAP
 
 
-output_re = re.compile(r"RSSI: -(\d{2}) Ch: (\d{1,2}) Peer MAC: (.{2}:.{2}:.{2}:.{2}:.{2}:.{2}) SSID:(.*)")
+output_re = re.compile(r"RSSI: -(\d{1,3}) Ch: (\d{1,2}) Peer MAC: (.{2}:.{2}:.{2}:.{2}:.{2}:.{2}) SSID:(.*)")
 
 
 def parse_header():
