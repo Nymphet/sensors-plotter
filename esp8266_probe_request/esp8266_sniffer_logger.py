@@ -17,8 +17,8 @@ ser = serial.Serial(serial_port, baud_rate, timeout=1)
 def update_data():
     today = datetime.date.today()
     now = time.time()
-    # write every 60s
-    write_interval = 60
+    # write every day
+    write_interval = 60 * 60 * 24
     print("[Logger]: Today is ", str(today))
     data = list()
     try:
