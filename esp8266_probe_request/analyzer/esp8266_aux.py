@@ -30,7 +30,7 @@ def preprocess_csv_string(csvstring):
 
 def get_MAC_list(df):
     # get mac list from a df
-    MAC_list = df.PeerMAC.value_counts().keys()
+    MAC_list = list(df.PeerMAC.value_counts().keys())
     return MAC_list
 
 

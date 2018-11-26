@@ -7,8 +7,8 @@ import time
 import esp8266_sniffer_parser
 
 
-# serial_port = "/dev/ttyUSB0"
-serial_port = "/dev/cu.wchusbserial1420"
+serial_port = "/dev/ttyUSB0"
+# serial_port = "/dev/cu.wchusbserial1420"
 baud_rate = 115200
 
 ser = serial.Serial(serial_port, baud_rate, timeout=1)
@@ -17,9 +17,10 @@ ser = serial.Serial(serial_port, baud_rate, timeout=1)
 def update_data():
     today = datetime.date.today()
     now = time.time()
-    # write every day
-    write_interval = 60 * 60 * 24
-    print("[Logger]: Today is ", str(today))
+    # write every 10 min
+    write_interval = 60 * 10
+    print("[Logger]: New data collection process started, now is ", datetime.datetime.now())
+    print('[Logger]: Collecting data for {write_interval} seconds'.format(write_interval=write_interval))
     data = list()
     try:
         while True:
@@ -40,7 +41,7 @@ def update_data():
 
 
 def write_data(today, data):
-    data_filename = "./data/data-"+str(today)+".csv"
+    data_filename = "./data/esp8266-dlzziio-"+str(today)+".csv"
     with open(data_filename, 'a') as f:
         writestring = "\n".join([",".join(list(map(str, i)))
                                  for i in data]) + '\n'

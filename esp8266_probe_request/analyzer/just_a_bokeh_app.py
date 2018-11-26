@@ -26,7 +26,7 @@ from bokeh.models import ColumnDataSource, CustomJS
 from bokeh.models.widgets import (Button, DataTable, Div, NumberEditor,
                                   NumberFormatter, RadioButtonGroup,
                                   RangeSlider, Select, Slider, TableColumn,
-                                  TextInput)
+                                  TextInput, Dropdown, RadioGroup)
 from bokeh.plotting import curdoc, figure, output_file, show
 
 # Tornado
@@ -54,11 +54,14 @@ spectrum_tools = "box_select,box_zoom,lasso_select,pan,poly_select,tap,wheel_zoo
 histogram = figure(plot_width=1280, plot_height=720,
                    tools=spectrum_tools, x_axis_type="datetime")
 
-# just a string for init
-init_filename = '../data/data-2018-11-25.csv'
+# just for init
+init_filename = '../data/esp8266-dlzziio-2018-11-26.csv'
 raw_df = esp8266_aux.preprocess_csv_file(init_filename)
 MAC_list = esp8266_aux.get_MAC_list(raw_df)
-hist_df = time_series_histogram.histograms_of_time(raw_df)[MAC_list[0]]
+
+time_window = '10min'
+
+hist_df = time_series_histogram.histogram_of_time(raw_df, MAC_list[0], time_window_length=time_window)
 
 histogram_data_source = ColumnDataSource(hist_df)
 
@@ -79,16 +82,33 @@ def file_callback(attr, old, new):
     loaded_file_div.text = '<font color=#006699>' + "Loaded file" + ': </font>' + \
         file_source.data['file_name'][0]
     raw_contents = file_source.data['file_contents'][0]
-    # # remove the prefix that JS adds
+    # remove the prefix that JS adds
     prefix, b64_contents = raw_contents.split(",", 1)
     file_contents = base64.b64decode(b64_contents).decode()
+    # read in new rawdata
     raw_df = esp8266_aux.preprocess_csv_string(file_contents)
     MAC_list = esp8266_aux.get_MAC_list(raw_df)
-    hist_df = time_series_histogram.histograms_of_time(raw_df)[MAC_list[0]]
-    histogram_line.data_source = ColumnDataSource(hist_df)
+    # replace old MAC list by a new list.
+    mac_radio_group_column.children.pop()
+    mac_radio_group = RadioGroup(
+        labels=MAC_list, active=0)
+    mac_radio_group.on_click(mac_radio_group_callback)
+    mac_radio_group_column.children.append(mac_radio_group)
+    # calculate histogram for the first MAC
+    hist_df = time_series_histogram.histogram_of_time(raw_df, MAC_list[0], time_window_length=time_window)
+    histogram_line.data_source.data = ColumnDataSource(hist_df).data
 
 
 file_source.on_change('data', file_callback)
+
+
+def mac_radio_group_callback(new):
+    hist_df = time_series_histogram.histogram_of_time(raw_df, MAC_list[new], time_window_length=time_window)
+    histogram_line.data_source.data = ColumnDataSource(hist_df).data
+
+def time_window_text_input_callback(attr, old, new):
+    global time_window
+    time_window = time_window_text_input.value
 
 
 
@@ -138,19 +158,29 @@ load_file_button = Button(label="Load Data From CSV File", button_type='success'
 
 loaded_file_div = Div(text="Loaded file: None")
 
+mac_radio_group = RadioGroup(
+        labels=MAC_list, active=0)
+mac_radio_group.on_click(mac_radio_group_callback)
 
+time_window_text_input = TextInput(
+    title="Time Window", value=str(time_window))
+time_window_text_input.on_change(
+    'value', time_window_text_input_callback)
 
 # --- Layouts
 
+mac_radio_group_column = column(mac_radio_group)
+
 input_widgets = column(
     load_file_button,
-    loaded_file_div
+    loaded_file_div,
+    time_window_text_input
 )
 
 
 figure_widgets = column(histogram)
 
-column1 = row(figure_widgets, input_widgets)
+column1 = row(figure_widgets, mac_radio_group_column, input_widgets)
 
 
 # put the button and plot in a layout and add to the document

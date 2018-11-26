@@ -57,7 +57,7 @@ doc = curdoc()
 
 # ------ import and preprocess data
 
-filename = '../data/data-2018-11-25.csv'
+filename = '../data/esp8266-dlzziio-2018-11-26.csv'
 df = esp8266_aux.preprocess_csv_file(filename)
 
 # ------ prepare a empty figure and start to draw
