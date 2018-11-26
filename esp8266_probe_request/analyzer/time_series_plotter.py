@@ -36,6 +36,9 @@ from bokeh.palettes import brewer
 # Tornado
 from tornado import gen
 
+
+import esp8266_aux
+
 # ------ some aux functions here
 
 
@@ -54,18 +57,8 @@ doc = curdoc()
 
 # ------ import and preprocess data
 
-filename = './data/data-2018-11-25.csv'
-
-with open(filename, 'r') as f:
-    df = pd.read_csv(f, names=['RSSI', 'Ch', 'PeerMAC', 'SSID', 'time'])
-
-# first, we want to plot RSSI vs. timestamp for each PeerMAC, to see how distant the device is from the ESP8266 at any time.
-
-# Convert timestamp to datetime format
-df['time'] = pd.to_datetime(df['time'], unit='s')
-# By default pandas converts timestamps to UTC time, and if we specify time zone
-# by tz_localize, bokeh would not recognize that, so we manually convert UTC time to Asia/Shanghai
-df['time'] = df['time'] + pd.Timedelta('08:00:00')
+filename = '../data/data-2018-11-25.csv'
+df = esp8266_aux.preprocess_csv_file(filename)
 
 # ------ prepare a empty figure and start to draw
 
